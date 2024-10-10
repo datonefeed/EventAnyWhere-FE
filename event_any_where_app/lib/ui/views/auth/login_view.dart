@@ -39,7 +39,7 @@ class _LoginViewState extends State<LoginView> {
                 const Text(
                   'EventAnywhere',
                   style: TextStyle(
-                    fontSize: 28,
+                    fontSize: 27,
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),
