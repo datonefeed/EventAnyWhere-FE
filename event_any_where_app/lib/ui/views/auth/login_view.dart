@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:event_any_where_app/ui/viewmodels/auth_viewmodel.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -8,6 +9,34 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  String message = '';
+
+  Future<void> login() async {
+    String email = _emailController.text;
+    String password = _passwordController.text;
+
+    // Gọi hàm từ auth_viewmodel để đăng nhập
+    try {
+      String response = await AuthViewModel.login(email, password);
+      setState(() {
+        message = response; // Cập nhật thông điệp
+      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(response),
+      ));
+    } catch (e) {
+      // Xử lý lỗi nếu có
+      setState(() {
+        message = 'Đăng nhập không thành công: $e';
+      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Đã xảy ra lỗi: $e'),
+      ));
+    }
+  }
+
   bool _obscureText = true;
   bool _rememberMe = false;
 
@@ -25,16 +54,8 @@ class _LoginViewState extends State<LoginView> {
               children: [
                 Image.asset(
                   'assets/images/logo_E.png',
-                  // width: 70,
                   height: 70,
-                  // color: Colors.white,
                 ),
-                // const Icon(
-
-                //   // Icons.event,
-                //   // size: 80,
-                //   color: Colors.white,
-                // ),
                 const SizedBox(height: 5),
                 const Text(
                   'EventAnywhere',
@@ -48,21 +69,18 @@ class _LoginViewState extends State<LoginView> {
                 const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          'Sign In',
-                          style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
-                        )
-                      ],
+                    Text(
+                      'Sign In',
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
                 const SizedBox(height: 10),
                 TextFormField(
+                  controller: _emailController,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.email, color: Colors.white),
                     hintText: 'abc@email.com',
@@ -78,6 +96,7 @@ class _LoginViewState extends State<LoginView> {
                 ),
                 const SizedBox(height: 20),
                 TextFormField(
+                  controller: _passwordController,
                   obscureText: _obscureText,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.lock, color: Colors.white),
@@ -135,7 +154,7 @@ class _LoginViewState extends State<LoginView> {
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: login,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFFF5722),
                     padding: const EdgeInsets.symmetric(
@@ -155,6 +174,11 @@ class _LoginViewState extends State<LoginView> {
                       Icon(Icons.arrow_forward, color: Colors.white),
                     ],
                   ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  message, // Hiển thị thông điệp từ phản hồi
+                  style: const TextStyle(color: Colors.red),
                 ),
                 const SizedBox(height: 20),
                 const Text('OR', style: TextStyle(color: Colors.white)),
